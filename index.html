@@ -9,92 +9,123 @@
     :root{
       --bg:#ffffff;
       --panel:#ffffff;
-      --muted:#9aa0a6;
       --text:#111827;
       --soft:#f1f3f4;
       --border:#e5e7eb;
-      --accent:#111111;            /* black send button */
-      --radius:22px;
+      --accent:#111111;
       --content-w:760px;
+      /* JS keeps this updated so content never hides behind the composer */
+      --composer-pad-bottom:220px;
     }
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);
+    html,body{
+      height:100%; margin:0; background:var(--bg); color:var(--text);
       font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial;
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
     .app{display:grid;grid-template-rows:auto 1fr auto;height:100vh;}
 
     /* Top bar */
     .topbar{
-      height:56px;display:flex;align-items:center;justify-content:center;
-      border-bottom:1px solid var(--border);background:var(--panel);position:sticky;top:0;z-index:10;
+      height:56px; display:flex; align-items:center; justify-content:center;
+      border-bottom:1px solid var(--border); background:var(--panel);
+      position:sticky; top:0; z-index:10;
     }
     .topbar-inner{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;}
-    .brand{font-weight:600;font-size:14px;opacity:.9;user-select:none;display:flex;gap:6px;align-items:center;}
-    .brand .dot{width:18px;height:18px;border-radius:50%;border:2px solid #111;display:inline-block;opacity:.85;}
+    .brand{font-weight:600;font-size:14px;opacity:.9;user-select:none;display:flex;gap:8px;align-items:center;}
+    .logo-knot{ width:20px; height:20px; display:inline-block; }
+    .logo-knot rect{ fill:#111; rx:2.6; ry:2.6; }
 
     .nav-actions{display:flex;gap:8px;align-items:center;}
     .btn{font-size:14px;border-radius:999px;padding:8px 12px;border:1px solid var(--border);background:#fff;cursor:default;user-select:none;}
     .btn.login{background:#111;color:#fff;border-color:#111;}
     .btn.signup{font-weight:600;}
-    .btn.help{width:32px;height:32px;display:grid;place-items:center;padding:0;}
-    .btn.help svg{width:16px;height:16px;stroke:#111;fill:none;stroke-width:2;}
+    .btn.help{width:32px;height:32px;display:grid;place-items:center;padding:0;border:1px solid var(--border);border-radius:999px;background:#fff;color:#111;font-weight:700;cursor:default;}
+    .btn.help .qmark{font-size:16px;line-height:1;transform:translateY(1px);}
 
-    /* Main area */
+    /* Main scroll container reserves space equal to the composer height */
+    /* Main scroll container; use container padding as spacer for composer height */
     .main{overflow:auto;}
-    .container{max-width:var(--content-w);margin:0 auto;padding:32px 16px 160px;}
+    .container{ max-width:var(--content-w); margin:0 auto; padding:32px 16px var(--composer-pad-bottom); }
 
+    /* Messages */
     .user-chip{
-      display:inline-block;background:var(--soft);color:#374151;border:1px solid var(--border);
-      border-radius:999px;padding:8px 14px;font-size:14px;line-height:1.4;margin:16px 0 8px 56px;white-space:pre-wrap;
-      max-width:calc(var(--content-w) - 80px);
+      display:inline-block; background:var(--soft); color:#374151; border:1px solid var(--border);
+      border-radius:999px; padding:8px 14px; font-size:14px; line-height:1.4;
+      white-space:pre-wrap; max-width:calc(var(--content-w) - 80px);
+      /* LEFT aligned */
+      margin:16px 0 8px 0;           /* was 16px 0 8px 56px */
     }
-    .assistant{margin:6px 0 8px 56px;line-height:1.7;font-size:16px;white-space:pre-wrap;}
+    .assistant{ margin:6px 0 8px 0; line-height:1.7; font-size:16px; white-space:pre-wrap; }
+    /* If you want assistant text flush-left too, change the line above to margin:6px 0 8px 0; */
+
+    /* typing cursor */
     .cursor{display:inline-block;width:9px;height:1.05em;background:transparent;border-right:2px solid #999;transform:translateY(2px);animation:blink 1s steps(1,end) infinite;}
     @keyframes blink{50%{border-right-color:transparent;}}
 
-    .icons{
-      margin:8px 0 18px 56px;display:flex;gap:14px;align-items:center;color:#6b7280;
-    }
-    .icons button{border:none;background:transparent;padding:6px;border-radius:8px;cursor:default;display:grid;place-items:center;}
-    .icons svg{width:20px;height:20px;stroke:#6b7280;fill:none;stroke-width:1.8;}
-    .icons button:hover{background:#f5f5f5;}
+    /* Action icons row */
+    .icons{ margin:6px 0 14px 0; display:flex; gap:16px; align-items:center; color:#6b7280; }
+    .icons button{ border:none; background:transparent; padding:4px; border-radius:8px; cursor:default; display:grid; place-items:center; }
+    .icons svg{ width:20px; height:20px; color:#6b7280; }
+    .icons svg *{ stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
+    .icons button:hover{ background:#f5f5f5; }
 
     /* Composer */
     .composer-wrap{
-      position:fixed;left:0;right:0;bottom:0;background:linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,.92) 30%, rgba(255,255,255,0));
-      border-top:1px solid var(--border);padding:16px 12px;
+      position:fixed; left:0; right:0; bottom:0;
+      background:linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,.92) 30%, rgba(255,255,255,0));
+      border-top:1px solid var(--border); padding:16px 12px;
+      padding-bottom:calc(16px + env(safe-area-inset-bottom));
     }
-    .composer{max-width:var(--content-w);margin:0 auto;}
-    .input{position:relative;display:flex;align-items:center;background:var(--soft);border:1px solid var(--border);border-radius:28px;padding:14px 60px 14px 18px;min-height:56px;}
-    .input input{width:100%;border:none;outline:none;background:transparent;font-size:15px;color:#2a2a2a;}
-    .input input[readonly]{caret-color:transparent;}
-    .send{position:absolute;right:8px;bottom:8px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--accent);border:none;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);transition:transform .05s ease, opacity .15s ease;}
-    .send:active{transform:translateY(1px);}
-    .send:disabled{opacity:.5;cursor:not-allowed;}
-    .send svg{width:18px;height:18px;fill:#fff;}
+    .composer{ max-width:var(--content-w); margin:0 auto; }
+    .input{
+      position:relative; display:flex; align-items:center;
+      background:var(--soft); border:1px solid var(--border);
+      border-radius:28px; padding:14px 60px 14px 18px; min-height:56px;
+      margin-left:auto;   /* RIGHT justify the composer bubble */
+    }
+    .input input{ width:100%; border:none; outline:none; background:transparent; font-size:15px; color:#2a2a2a; }
+    .input input[readonly]{ caret-color:transparent; }
+    .send{ position:absolute; right:8px; bottom:8px; width:40px; height:40px; border-radius:50%; display:grid; place-items:center; background:var(--accent); border:none; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.25); transition:transform .05s ease, opacity .15s ease; }
+    .send:active{ transform:translateY(1px); }
+    .send:disabled{ opacity:.5; cursor:not-allowed; }
+    .send svg{ width:18px; height:18px; fill:#fff; }
 
-    .composer-pills{display:flex;gap:10px;align-items:center;margin-top:10px;padding:0 6px;}
-    .pill{display:flex;gap:8px;align-items:center;border:1px solid var(--border);border-radius:999px;background:#fff;color:#374151;font-size:13px;padding:8px 12px;user-select:none;cursor:default;}
-    .pill svg{width:16px;height:16px;stroke:#4b5563;fill:none;stroke-width:1.8;}
+    .composer-pills{ display:flex; gap:10px; align-items:center; margin-top:10px; padding:0 6px; }
+    .pill{ display:flex; gap:8px; align-items:center; border:1px solid var(--border); border-radius:999px; background:#fff; color:#374151; font-size:13px; padding:8px 12px; user-select:none; cursor:default; }
+    .pill svg{ width:16px; height:16px; }
+    .pill svg *{ stroke:#4b5563; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
 
-    .note{margin-top:10px;font-size:12px;color:#6b7280;text-align:center;user-select:none;}
+    .note{ margin-top:10px; font-size:12px; color:#6b7280; text-align:center; user-select:none; }
 
-    ::-webkit-scrollbar{width:12px}
-    ::-webkit-scrollbar-thumb{background:#dadde1;border-radius:999px}
-    ::-webkit-scrollbar-thumb:hover{background:#cfd2d8}
-    @media (max-width:480px){.container{padding-bottom:180px}}
+    /* Scrollbar */
+    ::-webkit-scrollbar{ width:12px }
+    ::-webkit-scrollbar-thumb{ background:#dadde1; border-radius:999px }
+    ::-webkit-scrollbar-thumb:hover{ background:#cfd2d8 }
+
+    @media (max-width:480px){ .container{ padding-bottom:var(--composer-pad-bottom) } }
   </style>
 </head>
 <body>
   <div class="app" aria-label="Chat interface">
     <header class="topbar">
       <div class="topbar-inner">
-        <div class="brand"><span class="dot"></span> ChatGPT</div>
+        <div class="brand">
+          <svg class="logo-knot" viewBox="0 0 64 64" aria-hidden="true">
+            <g>
+              <rect x="28" y="6" width="8" height="20" rx="2.6" ry="2.6"/>
+              <rect x="28" y="6" width="8" height="20" rx="2.6" ry="2.6" transform="rotate(60 32 32)"/>
+              <rect x="28" y="6" width="8" height="20" rx="2.6" ry="2.6" transform="rotate(120 32 32)"/>
+              <rect x="28" y="6" width="8" height="20" rx="2.6" ry="2.6" transform="rotate(180 32 32)"/>
+              <rect x="28" y="6" width="8" height="20" rx="2.6" ry="2.6" transform="rotate(240 32 32)"/>
+              <rect x="28" y="6" width="8" height="20" rx="2.6" ry="2.6" transform="rotate(300 32 32)"/>
+            </g>
+          </svg>
+          ChatGPT
+        </div>
         <div class="nav-actions">
           <div class="btn login">Log in</div>
           <div class="btn signup">Sign up for free</div>
-          <div class="btn help" title="Help">
-            <svg viewBox="0 0 24 24"><path d="M12 17v.01M12 13a3 3 0 1 0-3-3m3 3v1m0-9a9 9 0 1 0 0 18a9 9 0 0 0 0-18"/></svg>
-          </div>
+          <div class="btn help" title="Help"><span class="qmark">?</span></div>
         </div>
       </div>
     </header>
@@ -108,25 +139,23 @@
         <div class="input">
           <input id="promptInput" type="text" value="what causes lightning?" readonly aria-readonly="true" aria-label="Prompt"/>
           <button id="sendBtn" class="send" aria-label="Send">
-            <!-- black circle with UP arrow -->
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 5l-5 5h3v7h4v-7h3l-5-5z"/>
-            </svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5l-5 5h3v7h4v-7h3l-5-5z"/></svg>
           </button>
         </div>
 
-        <!-- Pills row -->
         <div class="composer-pills">
           <div class="pill" title="Attach">
-            <svg viewBox="0 0 24 24"><path d="M21 15V7a4 4 0 0 0-8 0v10a3 3 0 1 1-6 0V8"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21.44 11.05L12 20.49a5 5 0 0 1-7.07-7.07L14.83 3.52a3.5 3.5 0 1 1 4.95 4.95L9.36 18.89a2 2 0 1 1-2.83-2.83L15.58 7.02"/>
+            </svg>
             <span>Attach</span>
           </div>
           <div class="pill" title="Search">
-            <svg viewBox="0 0 24 24"><path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 1 1 0-15a7.5 7.5 0 0 1 0 15z"/></svg>
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/></svg>
             <span>Search</span>
           </div>
           <div class="pill" title="Study">
-            <svg viewBox="0 0 24 24"><path d="M3 6l9-3 9 3-9 3-9-3zm0 6l9 3 9-3M3 12v6l9 3 9-3v-6"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M3 6l9-3 9 3-9 3-9-3Z"/><path d="M3 12l9 3 9-3"/><path d="M3 12v6l9 3 9-3v-6"/></svg>
             <span>Study</span>
           </div>
         </div>
@@ -138,11 +167,28 @@
 
   <script>
     (function(){
+      const mainScroller = document.querySelector('.main');
       const messagesEl = document.getElementById('messages');
       const sendBtn = document.getElementById('sendBtn');
       const inputEl = document.getElementById('promptInput');
+      const composer = document.querySelector('.composer-wrap');
+      const containerEl = document.querySelector('.container');
 
       const ANSWER = `Within thunderclouds, turbulence is caused by air updrafts, and tiny ice crystals and water droplets are made to collide. During these collisions, a positive charge is acquired by smaller particles, but larger ones are given a negative charge. In a cloud, smaller particles are lifted, while larger ones are pulled downward. As a result of this, opposite charges are separated, and an enormous electrical potential is created. In a thunderstorm, electricity is discharged between cloud regions, and a similar release is observed between the cloud and Earth’s surface. Among lightning strikes, only a quarter are directed toward the ground, and most are retained within clouds. With the use of satellite detectors, lightning activity was mapped globally, and new insights were gained by researchers. According to satellite data, the most lightning is recorded in Central Africa, because storm formation is enhanced by ocean winds and elevated terrain. In the United States, frequent lightning is reported in Florida, where sea breezes from both coasts are pushed inland and forced to converge. At their collision point, warm air is forced upward, so thunderstorms are triggered and intensified. Across seasons, lightning intensity is observed to vary, and distinctive global patterns are revealed. In North America, wildfires are often ignited by lightning in summer, but in South America, damp conditions prevent such fires from spreading. Over oceanic areas, lightning is rarely observed, because water warms more slowly than land and less convection is generated. On some Pacific islands, lightning is seen so rarely that no local word exists for it, and cultural references to it are absent. Through lightning research, forecasting is improved, and deadly storms can be predicted more effectively in advance.`;
+
+      /* keep enough space in the scroll area so text never hides behind the composer */
+      function setPad(px){
+        const value = `calc(${px}px + env(safe-area-inset-bottom) + 24px)`; // cushion + safe area
+        document.documentElement.style.setProperty('--composer-pad-bottom', value);
+        if (containerEl) containerEl.style.paddingBottom = value; // belt & suspenders
+      }
+      function adjustBottomPadding(){
+        const h = Math.ceil(composer.getBoundingClientRect().height);
+        setPad(h);
+      }
+      function scrollToBottom(){
+        mainScroller.scrollTo({ top: mainScroller.scrollHeight, behavior: 'auto' });
+      }
 
       function addUserChip(text){
         const chip=document.createElement('div');
@@ -162,69 +208,69 @@
 
         const words=text.split(/\s+/);
         let i=0;
-        const msPerWord=30; // adjust speed
+        const msPerWord=30;
 
+        const padTimer = setInterval(adjustBottomPadding, 120);
         const timer=setInterval(()=>{
           if(i>=words.length){
             clearInterval(timer);
+            clearInterval(padTimer);
             a.removeChild(cursor);
             addIconsRow();
+            adjustBottomPadding();
+            scrollToBottom();
             return;
           }
           const chunk=(i===0?words[i]:(' '+words[i]));
           cursor.insertAdjacentText('beforebegin', chunk);
           i++;
-          window.scrollTo({top:document.body.scrollHeight});
+          adjustBottomPadding();
+          scrollToBottom();
         }, msPerWord);
-      }
-
-      function svg(pathD){
-        const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
-        s.setAttribute('viewBox','0 0 24 24');
-        s.innerHTML=`<path d="${pathD}"/>`;
-        return s;
       }
 
       function addIconsRow(){
         const row=document.createElement('div');
         row.className='icons';
-        const paths=[
-          // copy
-          "M16 3H9a2 2 0 0 0-2 2v1M8 7h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Zm8-1h2a2 2 0 0 1 2 2v9",
-          // thumbs up
-          "M14 10V4l-4 6H5v10h7l5-8v-2h-3z",
-          // thumbs down
-          "M10 14v6l4-6h5V4h-7L7 12v2h3z",
-          // speaker
-          "M5 9v6h4l5 4V5l-5 4H5zm11 1a5 5 0 0 1 0 4m2-6a8 8 0 0 1 0 8",
-          // share
-          "M12 3v12m0-12 4 4m-4-4-4 4M5 21h14a2 2 0 0 0 2-2v-5",
-          // refresh
-          "M4 4v6h6M20 20v-6h-6M20 9A7 7 0 0 0 7 6M4 15a7 7 0 0 0 13 3"
+        const svgs = [
+          `<svg viewBox="0 0 24 24"><rect x="9" y="9" width="10" height="10" rx="2"/><rect x="5" y="5" width="10" height="10" rx="2"/></svg>`,
+          `<svg viewBox="0 0 24 24"><path d="M7 10v10h8a4 4 0 0 0 4-4v-5a2 2 0 0 0-2-2h-5.5l.9-4.5a2 2 0 0 0-2-2L8 10z"/></svg>`,
+          `<svg viewBox="0 0 24 24"><path d="M17 14V4H9a4 4 0 0 0-4 4v5a2 2 0 0 0 2 2h5.5l-.9 4.5a2 2 0 0 0 2 2L16 14z"/></svg>`,
+          `<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 7a7 7 0 0 1 0 10"/></svg>`,
+          `<svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7.5 8.5 12 4l4.5 4.5"/><path d="M5 21h14"/></svg>`,
+          `<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6l3 3"/><path d="M21 12a9 9 0 0 1-15 6l-3-3"/></svg>`
         ];
-        paths.forEach(d=>{
+        svgs.forEach(markup=>{
           const b=document.createElement('button');
-          b.appendChild(svg(d));
+          b.innerHTML = markup;
           row.appendChild(b);
         });
         messagesEl.appendChild(row);
-        window.scrollTo({top:document.body.scrollHeight});
       }
 
       function renderOnce(){
         messagesEl.innerHTML='';
         const q=inputEl.value;
-        addUserChip(q);
+        addUserChip(q);            // LEFT-justified user message
         addAssistantTyping(ANSWER);
 
-        // one-time lock
-        sendBtn.disabled=true;
+        // clear & lock the input after submit
+        inputEl.value = '';
+        inputEl.placeholder = '';
+        sendBtn.disabled = true;
         inputEl.setAttribute('disabled','true');
         inputEl.setAttribute('aria-disabled','true');
         try{ sessionStorage.setItem('submitted_once','1'); }catch(e){}
+
+        adjustBottomPadding();
+        scrollToBottom();
       }
 
       sendBtn.addEventListener('click', ()=>{ if(!sendBtn.disabled) renderOnce(); });
+      window.addEventListener('load', adjustBottomPadding);
+      window.addEventListener('resize', adjustBottomPadding);
+      try{ new ResizeObserver(adjustBottomPadding).observe(composer); }catch(e){}
+      mainScroller.addEventListener('scroll', ()=>{/* no-op; keeps layout listeners alive */});
 
       // persist within session
       try{ if(sessionStorage.getItem('submitted_once')==='1'){ renderOnce(); } }catch(e){}
