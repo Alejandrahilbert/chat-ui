@@ -32,8 +32,8 @@
     }
     .topbar-inner{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;}
     .brand{font-weight:600;font-size:14px;opacity:.9;user-select:none;display:flex;gap:8px;align-items:center;}
-    .logo-knot{ width:20px; height:20px; display:inline-block; }
-    .logo-knot rect{ fill:#111; rx:2.6; ry:2.6; }
+    /* use your GitHub image instead of the SVG knot */
+    .logo-img{height:28px;width:auto;display:block;} /* tweak to 24–32px to taste */
 
     .nav-actions{display:flex;gap:8px;align-items:center;}
     .btn{font-size:14px;border-radius:999px;padding:8px 12px;border:1px solid var(--border);background:#fff;cursor:default;user-select:none;}
@@ -43,7 +43,6 @@
     .btn.help .qmark{font-size:16px;line-height:1;transform:translateY(1px);}
 
     /* Main scroll container reserves space equal to the composer height */
-    /* Main scroll container; use container padding as spacer for composer height */
     .main{overflow:auto;}
     .container{ max-width:var(--content-w); margin:0 auto; padding:32px 16px var(--composer-pad-bottom); }
 
@@ -52,11 +51,9 @@
       display:inline-block; background:var(--soft); color:#374151; border:1px solid var(--border);
       border-radius:999px; padding:8px 14px; font-size:14px; line-height:1.4;
       white-space:pre-wrap; max-width:calc(var(--content-w) - 80px);
-      /* LEFT aligned */
-      margin:16px 0 8px 0;           /* was 16px 0 8px 56px */
+      margin:16px 0 8px 0; /* flush-left */
     }
     .assistant{ margin:6px 0 8px 0; line-height:1.7; font-size:16px; white-space:pre-wrap; }
-    /* If you want assistant text flush-left too, change the line above to margin:6px 0 8px 0; */
 
     /* typing cursor */
     .cursor{display:inline-block;width:9px;height:1.05em;background:transparent;border-right:2px solid #999;transform:translateY(2px);animation:blink 1s steps(1,end) infinite;}
@@ -102,7 +99,10 @@
     ::-webkit-scrollbar-thumb{ background:#dadde1; border-radius:999px }
     ::-webkit-scrollbar-thumb:hover{ background:#cfd2d8 }
 
-    @media (max-width:480px){ .container{ padding-bottom:var(--composer-pad-bottom) } }
+    @media (max-width:480px){
+      .container{ padding-bottom:var(--composer-pad-bottom) }
+      .logo-img{ height:24px; } /* a touch smaller on very small screens */
+    }
   </style>
 </head>
 <body>
@@ -110,16 +110,7 @@
     <header class="topbar">
       <div class="topbar-inner">
         <div class="brand">
-          <svg class="logo-knot" viewBox="0 0 64 64" aria-hidden="true">
-            <g>
-              <rect x="28" y="6" width="8" height="20" rx="2.6" ry="2.6"/>
-              <rect x="28" y="6" width="8" height="20" rx="2.6" ry="2.6" transform="rotate(60 32 32)"/>
-              <rect x="28" y="6" width="8" height="20" rx="2.6" ry="2.6" transform="rotate(120 32 32)"/>
-              <rect x="28" y="6" width="8" height="20" rx="2.6" ry="2.6" transform="rotate(180 32 32)"/>
-              <rect x="28" y="6" width="8" height="20" rx="2.6" ry="2.6" transform="rotate(240 32 32)"/>
-              <rect x="28" y="6" width="8" height="20" rx="2.6" ry="2.6" transform="rotate(300 32 32)"/>
-            </g>
-          </svg>
+          <img class="logo-img" src="ChatGPT-Logo.png" alt="ChatGPT logo"/>
           ChatGPT
         </div>
         <div class="nav-actions">
@@ -176,11 +167,10 @@
 
       const ANSWER = `Within thunderclouds, turbulence is caused by air updrafts, and tiny ice crystals and water droplets are made to collide. During these collisions, a positive charge is acquired by smaller particles, but larger ones are given a negative charge. In a cloud, smaller particles are lifted, while larger ones are pulled downward. As a result of this, opposite charges are separated, and an enormous electrical potential is created. In a thunderstorm, electricity is discharged between cloud regions, and a similar release is observed between the cloud and Earth’s surface. Among lightning strikes, only a quarter are directed toward the ground, and most are retained within clouds. With the use of satellite detectors, lightning activity was mapped globally, and new insights were gained by researchers. According to satellite data, the most lightning is recorded in Central Africa, because storm formation is enhanced by ocean winds and elevated terrain. In the United States, frequent lightning is reported in Florida, where sea breezes from both coasts are pushed inland and forced to converge. At their collision point, warm air is forced upward, so thunderstorms are triggered and intensified. Across seasons, lightning intensity is observed to vary, and distinctive global patterns are revealed. In North America, wildfires are often ignited by lightning in summer, but in South America, damp conditions prevent such fires from spreading. Over oceanic areas, lightning is rarely observed, because water warms more slowly than land and less convection is generated. On some Pacific islands, lightning is seen so rarely that no local word exists for it, and cultural references to it are absent. Through lightning research, forecasting is improved, and deadly storms can be predicted more effectively in advance.`;
 
-      /* keep enough space in the scroll area so text never hides behind the composer */
       function setPad(px){
-        const value = `calc(${px}px + env(safe-area-inset-bottom) + 24px)`; // cushion + safe area
+        const value = `calc(${px}px + env(safe-area-inset-bottom) + 24px)`;
         document.documentElement.style.setProperty('--composer-pad-bottom', value);
-        if (containerEl) containerEl.style.paddingBottom = value; // belt & suspenders
+        if (containerEl) containerEl.style.paddingBottom = value;
       }
       function adjustBottomPadding(){
         const h = Math.ceil(composer.getBoundingClientRect().height);
@@ -251,10 +241,9 @@
       function renderOnce(){
         messagesEl.innerHTML='';
         const q=inputEl.value;
-        addUserChip(q);            // LEFT-justified user message
+        addUserChip(q);
         addAssistantTyping(ANSWER);
 
-        // clear & lock the input after submit
         inputEl.value = '';
         inputEl.placeholder = '';
         sendBtn.disabled = true;
@@ -270,9 +259,8 @@
       window.addEventListener('load', adjustBottomPadding);
       window.addEventListener('resize', adjustBottomPadding);
       try{ new ResizeObserver(adjustBottomPadding).observe(composer); }catch(e){}
-      mainScroller.addEventListener('scroll', ()=>{/* no-op; keeps layout listeners alive */});
+      mainScroller.addEventListener('scroll', ()=>{});
 
-      // persist within session
       try{ if(sessionStorage.getItem('submitted_once')==='1'){ renderOnce(); } }catch(e){}
     })();
   </script>
