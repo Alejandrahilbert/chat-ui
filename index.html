@@ -14,7 +14,6 @@
       --border:#e5e7eb;
       --accent:#111111;
       --content-w:760px;
-      /* JS keeps this updated so content never hides behind the composer */
       --composer-pad-bottom:220px;
     }
     html,body{
@@ -32,8 +31,7 @@
     }
     .topbar-inner{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;}
     .brand{font-weight:600;font-size:14px;opacity:.9;user-select:none;display:flex;gap:8px;align-items:center;}
-    /* use your GitHub image instead of the SVG knot */
-    .logo-img{height:28px;width:auto;display:block;} /* tweak to 24–32px to taste */
+    .logo-img{ height:26px; width:auto; display:block; }
 
     .nav-actions{display:flex;gap:8px;align-items:center;}
     .btn{font-size:14px;border-radius:999px;padding:8px 12px;border:1px solid var(--border);background:#fff;cursor:default;user-select:none;}
@@ -42,43 +40,87 @@
     .btn.help{width:32px;height:32px;display:grid;place-items:center;padding:0;border:1px solid var(--border);border-radius:999px;background:#fff;color:#111;font-weight:700;cursor:default;}
     .btn.help .qmark{font-size:16px;line-height:1;transform:translateY(1px);}
 
-    /* Main scroll container reserves space equal to the composer height */
+    /* Main */
     .main{overflow:auto;}
     .container{ max-width:var(--content-w); margin:0 auto; padding:32px 16px var(--composer-pad-bottom); }
 
-    /* Messages */
-    .user-chip{
-      display:inline-block; background:var(--soft); color:#374151; border:1px solid var(--border);
-      border-radius:999px; padding:8px 14px; font-size:14px; line-height:1.4;
-      white-space:pre-wrap; max-width:calc(var(--content-w) - 80px);
-      margin:16px 0 8px 0; /* flush-left */
+    /* Messages container */
+    #messages {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
     }
-    .assistant{ margin:6px 0 8px 0; line-height:1.7; font-size:16px; white-space:pre-wrap; }
+
+    /* USER (you) — light grey chip on the right (like ChatGPT) */
+    .user-chip{
+      align-self:flex-end;
+      background:var(--soft);
+      color:var(--text);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:10px 14px;
+      font-size:15px;
+      line-height:1.5;
+      max-width:70%;
+      text-align:left;
+    }
+
+    /* ASSISTANT — plain text on white, no bubble */
+    .assistant{
+      align-self:stretch;
+      background:transparent;
+      border:none;
+      border-radius:0;
+      padding:0;
+      font-size:16px;
+      line-height:1.7;
+      max-width:100%;
+      text-align:left;
+    }
 
     /* typing cursor */
     .cursor{display:inline-block;width:9px;height:1.05em;background:transparent;border-right:2px solid #999;transform:translateY(2px);animation:blink 1s steps(1,end) infinite;}
     @keyframes blink{50%{border-right-color:transparent;}}
 
-    /* Action icons row */
+    /* Icons row */
     .icons{ margin:6px 0 14px 0; display:flex; gap:16px; align-items:center; color:#6b7280; }
     .icons button{ border:none; background:transparent; padding:4px; border-radius:8px; cursor:default; display:grid; place-items:center; }
     .icons svg{ width:20px; height:20px; color:#6b7280; }
     .icons svg *{ stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
     .icons button:hover{ background:#f5f5f5; }
 
-    /* Composer */
+    /* Composer — fixed with opaque base + fade; content never shows through */
     .composer-wrap{
       position:fixed; left:0; right:0; bottom:0;
-      background:linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,.92) 30%, rgba(255,255,255,0));
-      border-top:1px solid var(--border); padding:16px 12px;
+      z-index:100;                     /* keep above scrolling text */
+      background:transparent;          /* overlay is drawn with ::before */
+      border-top:1px solid var(--border);
+      padding:16px 12px;
       padding-bottom:calc(16px + env(safe-area-inset-bottom));
     }
-    .composer{ max-width:var(--content-w); margin:0 auto; }
+    .composer-wrap::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(
+          to top,
+          #fff 0%,
+          #fff 70%,
+          rgba(255,255,255,0.98) 85%,
+          rgba(255,255,255,0.90) 92%,
+          rgba(255,255,255,0.60) 96%,
+          rgba(255,255,255,0) 100%
+        );
+    }
+    .composer{ position:relative; z-index:1; max-width:var(--content-w); margin:0 auto; }
+
     .input{
       position:relative; display:flex; align-items:center;
       background:var(--soft); border:1px solid var(--border);
       border-radius:28px; padding:14px 60px 14px 18px; min-height:56px;
-      margin-left:auto;   /* RIGHT justify the composer bubble */
+      margin-left:auto;
     }
     .input input{ width:100%; border:none; outline:none; background:transparent; font-size:15px; color:#2a2a2a; }
     .input input[readonly]{ caret-color:transparent; }
@@ -99,10 +141,7 @@
     ::-webkit-scrollbar-thumb{ background:#dadde1; border-radius:999px }
     ::-webkit-scrollbar-thumb:hover{ background:#cfd2d8 }
 
-    @media (max-width:480px){
-      .container{ padding-bottom:var(--composer-pad-bottom) }
-      .logo-img{ height:24px; } /* a touch smaller on very small screens */
-    }
+    @media (max-width:480px){ .container{ padding-bottom:var(--composer-pad-bottom) } }
   </style>
 </head>
 <body>
@@ -151,7 +190,7 @@
           </div>
         </div>
 
-        <div class="note">AI can make mistakes. Check important info.</div>
+        <div class="note">ChatGPT can make mistakes. Check important info.</div>
       </div>
     </div>
   </div>
@@ -259,8 +298,6 @@
       window.addEventListener('load', adjustBottomPadding);
       window.addEventListener('resize', adjustBottomPadding);
       try{ new ResizeObserver(adjustBottomPadding).observe(composer); }catch(e){}
-      mainScroller.addEventListener('scroll', ()=>{});
-
       try{ if(sessionStorage.getItem('submitted_once')==='1'){ renderOnce(); } }catch(e){}
     })();
   </script>
